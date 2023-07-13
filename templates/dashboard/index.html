@@ -1,0 +1,593 @@
+{% extends 'components/layouts/default.html' %}
+{% load static %}
+
+{% block content %}
+
+<script defer src="{% static 'assets/js/apexcharts.js' %}"></script>
+<div x-data="sales">
+    <div class="pt-5">
+        <div class="grid xl:grid-cols-3 gap-6 mb-6">
+            <div class="panel h-full xl:col-span-2">
+                <div class="flex items-center dark:text-white-light mb-5">
+                    <h5 class="font-semibold text-lg">Üretim Performansı</h5>
+                </div>
+                <div class="relative">
+                    <div x-ref="revenueChart" class="bg-white dark:bg-black rounded-lg">
+                        <!-- loader -->
+                        <div class="min-h-[325px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
+                            <span class="animate-spin border-2 border-black dark:border-white !border-l-transparent  rounded-full w-5 h-5 inline-flex"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-full">
+                <div class="flex items-center mb-5">
+                    <h5 class="font-semibold text-lg dark:text-white-light">Makine Bazında</h5>
+                </div>
+                <div>
+                    <div x-ref="salesByCategory" class="bg-white dark:bg-black rounded-lg">
+                        <!-- loader -->
+                        <div class="min-h-[353px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
+                            <span class="animate-spin border-2 border-black dark:border-white !border-l-transparent  rounded-full w-5 h-5 inline-flex"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
+            <div class="panel h-full sm:col-span-2 xl:col-span-1">
+                <div class="flex items-center mb-5">
+                    <h5 class="font-semibold text-lg dark:text-white-light">Haftalık Çalışma <span class="block text-white-dark text-sm font-normal">Go to columns for details.</span></h5>
+                    <div class="ltr:ml-auto rtl:mr-auto relative">
+                        <div class="w-11 h-11 text-warning bg-[#ffeccb] dark:bg-warning dark:text-[#ffeccb] grid place-content-center rounded-full">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                            <path d="M15.5 22H8.5L8.83922 20.3039C8.93271 19.8365 9.34312 19.5 9.8198 19.5H14.1802C14.6569 19.5 15.0673 19.8365 15.1608 20.3039L15.5 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M19 5L19.9486 5.31621C20.9387 5.64623 21.4337 5.81124 21.7168 6.20408C22 6.59692 22 7.11873 21.9999 8.16234L21.9999 8.23487C21.9999 9.09561 21.9999 9.52598 21.7927 9.87809C21.5855 10.2302 21.2093 10.4392 20.4569 10.8572L17.5 12.5" stroke="currentColor" stroke-width="1.5"></path>
+                            <path d="M4.99994 5L4.05132 5.31621C3.06126 5.64623 2.56623 5.81124 2.2831 6.20408C1.99996 6.59692 1.99997 7.11873 2 8.16234L2 8.23487C2.00003 9.09561 2.00004 9.52598 2.20723 9.87809C2.41441 10.2302 2.79063 10.4392 3.54305 10.8572L6.49994 12.5" stroke="currentColor" stroke-width="1.5"></path>
+                            <path d="M11.1459 6.02251C11.5259 5.34084 11.7159 5 12 5C12.2841 5 12.4741 5.34084 12.8541 6.02251L12.9524 6.19887C13.0603 6.39258 13.1143 6.48944 13.1985 6.55334C13.2827 6.61725 13.3875 6.64097 13.5972 6.68841L13.7881 6.73161C14.526 6.89857 14.895 6.98205 14.9828 7.26432C15.0706 7.54659 14.819 7.84072 14.316 8.42898L14.1858 8.58117C14.0429 8.74833 13.9714 8.83191 13.9392 8.93531C13.9071 9.03872 13.9179 9.15023 13.9395 9.37327L13.9592 9.57632C14.0352 10.3612 14.0733 10.7536 13.8435 10.9281C13.6136 11.1025 13.2682 10.9435 12.5773 10.6254L12.3986 10.5431C12.2022 10.4527 12.1041 10.4075 12 10.4075C11.8959 10.4075 11.7978 10.4527 11.6014 10.5431L11.4227 10.6254C10.7318 10.9435 10.3864 11.1025 10.1565 10.9281C9.92674 10.7536 9.96476 10.3612 10.0408 9.57632L10.0605 9.37327C10.0821 9.15023 10.0929 9.03872 10.0608 8.93531C10.0286 8.83191 9.95713 8.74833 9.81418 8.58117L9.68403 8.42898C9.18097 7.84072 8.92945 7.54659 9.01723 7.26432C9.10501 6.98205 9.47396 6.89857 10.2119 6.73161L10.4028 6.68841C10.6125 6.64097 10.7173 6.61725 10.8015 6.55334C10.8857 6.48944 10.9397 6.39258 11.0476 6.19887L11.1459 6.02251Z" stroke="currentColor" stroke-width="1.5"></path>
+                            <path d="M18 22H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                            <path d="M17 2.45597C17.7415 2.59747 18.1811 2.75299 18.5609 3.22083C19.0367 3.80673 19.0115 4.43998 18.9612 5.70647C18.7805 10.2595 17.7601 16 12.0002 16C6.24021 16 5.21983 10.2595 5.03907 5.70647C4.98879 4.43998 4.96365 3.80673 5.43937 3.22083C5.91508 2.63494 6.48445 2.53887 7.62318 2.34674C8.74724 2.15709 10.2166 2 12.0002 2C12.7184 2 13.3857 2.02548 14 2.06829" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                        </svg>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div x-ref="dailySales" class="bg-white dark:bg-black rounded-lg">
+                        <!-- loader -->
+                        <div class="min-h-[175px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
+                            <span class="animate-spin border-2 border-black dark:border-white !border-l-transparent  rounded-full w-5 h-5 inline-flex"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-full">
+                <div class="flex items-center dark:text-white-light mb-5">
+                    <h5 class="font-semibold text-lg">Özet</h5>
+                </div>
+                <div class="space-y-9">
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 ltr:mr-3 rtl:ml-3">
+                            <div class="bg-secondary-light dark:bg-secondary text-secondary dark:text-secondary-light  rounded-full w-9 h-9 grid place-content-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3.74157 18.5545C4.94119 20 7.17389 20 11.6393 20H12.3605C16.8259 20 19.0586 20 20.2582 18.5545M3.74157 18.5545C2.54194 17.1091 2.9534 14.9146 3.77633 10.5257C4.36155 7.40452 4.65416 5.84393 5.76506 4.92196M3.74157 18.5545C3.74156 18.5545 3.74157 18.5545 3.74157 18.5545ZM20.2582 18.5545C21.4578 17.1091 21.0464 14.9146 20.2235 10.5257C19.6382 7.40452 19.3456 5.84393 18.2347 4.92196M20.2582 18.5545C20.2582 18.5545 20.2582 18.5545 20.2582 18.5545ZM18.2347 4.92196C17.1238 4 15.5361 4 12.3605 4H11.6393C8.46374 4 6.87596 4 5.76506 4.92196M18.2347 4.92196C18.2347 4.92196 18.2347 4.92196 18.2347 4.92196ZM5.76506 4.92196C5.76506 4.92196 5.76506 4.92196 5.76506 4.92196Z" stroke="currentColor" stroke-width="1.5" />
+                                    <path opacity="0.5" d="M9.1709 8C9.58273 9.16519 10.694 10 12.0002 10C13.3064 10 14.4177 9.16519 14.8295 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex font-semibold text-white-dark mb-2">
+                                <h6>Hedef</h6>
+                                <p class="ltr:ml-auto rtl:mr-auto"></p>
+                            </div>
+                            <div class="rounded-full h-2 bg-dark-light dark:bg-[#1b2e4b] shadow">
+                                <div class="bg-gradient-to-r from-[#7579ff] to-[#b224ef] w-11/12 h-full rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 ltr:mr-3 rtl:ml-3">
+                            <div class="bg-success-light dark:bg-success text-success dark:text-success-light rounded-full w-9 h-9 grid place-content-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.72848 16.1369C3.18295 14.5914 2.41018 13.8186 2.12264 12.816C1.83509 11.8134 2.08083 10.7485 2.57231 8.61875L2.85574 7.39057C3.26922 5.59881 3.47597 4.70292 4.08944 4.08944C4.70292 3.47597 5.59881 3.26922 7.39057 2.85574L8.61875 2.57231C10.7485 2.08083 11.8134 1.83509 12.816 2.12264C13.8186 2.41018 14.5914 3.18295 16.1369 4.72848L17.9665 6.55812C20.6555 9.24711 22 10.5916 22 12.2623C22 13.933 20.6555 15.2775 17.9665 17.9665C15.2775 20.6555 13.933 22 12.2623 22C10.5916 22 9.24711 20.6555 6.55812 17.9665L4.72848 16.1369Z" stroke="currentColor" stroke-width="1.5" />
+                                    <circle opacity="0.5" cx="8.60699" cy="8.87891" r="2" transform="rotate(-45 8.60699 8.87891)" stroke="currentColor" stroke-width="1.5" />
+                                    <path opacity="0.5" d="M11.5417 18.5L18.5208 11.5208" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex font-semibold text-white-dark mb-2">
+                                <h6>Gerçekleşen</h6>
+                                <p class="ltr:ml-auto rtl:mr-auto"></p>
+                            </div>
+                            <div class="w-full rounded-full h-2 bg-dark-light dark:bg-[#1b2e4b] shadow">
+                                <div class="bg-gradient-to-r from-[#3cba92] to-[#0ba360] w-full h-full rounded-full" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-9 h-9 ltr:mr-3 rtl:ml-3">
+                            <div class="bg-warning-light dark:bg-warning text-warning dark:text-warning-light rounded-full w-9 h-9 grid place-content-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5" />
+                                    <path opacity="0.5" d="M10 16H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path opacity="0.5" d="M14 16H12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                    <path opacity="0.5" d="M2 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex font-semibold text-white-dark mb-2">
+                                <h6>Gecikmeli</h6>
+                                <p class="ltr:ml-auto rtl:mr-auto"></p>
+                            </div>
+                            <div class="w-full rounded-full h-2 bg-dark-light dark:bg-[#1b2e4b] shadow">
+                                <div class="bg-gradient-to-r from-[#f09819] to-[#ff5858] w-full h-full rounded-full" style="width: 80%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel h-full p-0">
+                <div class="flex items-center justify-between w-full p-5 absolute">
+                    <div class="relative">
+                        <div class="text-success dark:text-success-light bg-success-light dark:bg-success w-11 h-11 rounded-lg flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 3L2.26491 3.0883C3.58495 3.52832 4.24497 3.74832 4.62248 4.2721C5 4.79587 5 5.49159 5 6.88304V9.5C5 12.3284 5 13.7426 5.87868 14.6213C6.75736 15.5 8.17157 15.5 11 15.5H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path opacity="0.5" d="M7.5 18C8.32843 18 9 18.6716 9 19.5C9 20.3284 8.32843 21 7.5 21C6.67157 21 6 20.3284 6 19.5C6 18.6716 6.67157 18 7.5 18Z" stroke="currentColor" stroke-width="1.5" />
+                                <path opacity="0.5" d="M16.5 18.0001C17.3284 18.0001 18 18.6716 18 19.5001C18 20.3285 17.3284 21.0001 16.5 21.0001C15.6716 21.0001 15 20.3285 15 19.5001C15 18.6716 15.6716 18.0001 16.5 18.0001Z" stroke="currentColor" stroke-width="1.5" />
+                                <path opacity="0.5" d="M11 9H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M5 6H16.4504C18.5054 6 19.5328 6 19.9775 6.67426C20.4221 7.34853 20.0173 8.29294 19.2078 10.1818L18.7792 11.1818C18.4013 12.0636 18.2123 12.5045 17.8366 12.7523C17.4609 13 16.9812 13 16.0218 13H5" stroke="currentColor" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h5 class="font-semibold text-2xl ltr:text-right rtl:text-left dark:text-white-light">
+                        3,192
+                        <span class="block text-sm font-normal">Toplam Sipariş</span>
+                    </h5>
+                </div>
+                <div x-ref="totalOrders" class="bg-transparent rounded-lg">
+                    <!-- loader -->
+                    <div class="min-h-[290px] grid place-content-center bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] ">
+                        <span class="animate-spin border-2 border-black dark:border-white !border-l-transparent  rounded-full w-5 h-5 inline-flex"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    document.addEventListener("alpine:init", () => {
+        Alpine.data("sales", () => ({
+            init() {
+                isDark = this.$store.app.theme === "dark" ? true : false;
+                isRtl = this.$store.app.rtlClass === "rtl" ? true : false;
+
+                const revenueChart = null;
+                const salesByCategory = null;
+                const dailySales = null;
+                const totalOrders = null;
+
+                // revenue
+                setTimeout(() => {
+                    this.revenueChart = new ApexCharts(this.$refs.revenueChart, this
+                        .revenueChartOptions)
+                    this.$refs.revenueChart.innerHTML = "";
+                    this.revenueChart.render()
+
+                    // sales by category
+                    this.salesByCategory = new ApexCharts(this.$refs.salesByCategory, this
+                        .salesByCategoryOptions)
+                    this.$refs.salesByCategory.innerHTML = "";
+                    this.salesByCategory.render()
+
+                    // daily sales
+                    this.dailySales = new ApexCharts(this.$refs.dailySales, this
+                        .dailySalesOptions)
+                    this.$refs.dailySales.innerHTML = "";
+                    this.dailySales.render()
+
+                    // total orders
+                    this.totalOrders = new ApexCharts(this.$refs.totalOrders, this
+                        .totalOrdersOptions)
+                    this.$refs.totalOrders.innerHTML = "";
+                    this.totalOrders.render()
+                }, 300);
+
+                this.$watch('$store.app.theme', () => {
+                    isDark = this.$store.app.theme === "dark" ? true : false;
+
+                    this.revenueChart.updateOptions(this.revenueChartOptions);
+                    this.salesByCategory.updateOptions(this.salesByCategoryOptions);
+                    this.dailySales.updateOptions(this.dailySalesOptions);
+                    this.totalOrders.updateOptions(this.totalOrdersOptions);
+                });
+
+                this.$watch('$store.app.rtlClass', () => {
+                    isRtl = this.$store.app.rtlClass === "rtl" ? true : false;
+                    this.revenueChart.updateOptions(this.revenueChartOptions);
+                });
+
+            },
+
+            // revenue
+            get revenueChartOptions() {
+                return {
+                    series: [{
+                            name: 'A',
+                            data: [16800, 16800, 15500, 17800, 15500, 17000, 19000, 16000,
+                                15000, 17000, 14000, 17000
+                            ]
+                        },
+                        {
+                            name: 'B',
+                            data: [16500, 17500, 16200, 17300, 16000, 19500, 16000, 17000,
+                                16000, 19000, 18000, 19000
+                            ]
+                        }
+                    ],
+                    chart: {
+                        height: 325,
+                        type: "area",
+                        fontFamily: 'Nunito, sans-serif',
+                        zoom: {
+                            enabled: false
+                        },
+                        toolbar: {
+                            show: false
+                        },
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        curve: 'smooth',
+                        width: 2,
+                        lineCap: 'square'
+                    },
+                    dropShadow: {
+                        enabled: true,
+                        opacity: 0.2,
+                        blur: 10,
+                        left: -7,
+                        top: 22
+                    },
+                    colors: isDark ? ['#2196f3', '#e7515a'] : ['#1b55e2', '#e7515a'],
+                    markers: {
+                        discrete: [{
+                                seriesIndex: 0,
+                                dataPointIndex: 6,
+                                fillColor: '#1b55e2',
+                                strokeColor: 'transparent',
+                                size: 7
+                            },
+                            {
+                                seriesIndex: 1,
+                                dataPointIndex: 5,
+                                fillColor: '#e7515a',
+                                strokeColor: 'transparent',
+                                size: 7
+                            },
+                        ],
+                    },
+                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül',
+                        'Ekim', 'Kasım', 'Aralık'
+                    ],
+                    xaxis: {
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        crosshairs: {
+                            show: true
+                        },
+                        labels: {
+                            offsetX: isRtl ? 2 : 0,
+                            offsetY: 5,
+                            style: {
+                                fontSize: '12px',
+                                cssClass: 'apexcharts-xaxis-title'
+                            }
+                        },
+                    },
+                    yaxis: {
+                        tickAmount: 7,
+                        labels: {
+                            formatter: (value) => {
+                                return value / 1000 + 'K';
+                            },
+                            offsetX: isRtl ? -30 : -10,
+                            offsetY: 0,
+                            style: {
+                                fontSize: '12px',
+                                cssClass: 'apexcharts-yaxis-title'
+                            },
+                        },
+                        opposite: isRtl ? true : false,
+                    },
+                    grid: {
+                        borderColor: isDark ? '#191e3a' : '#e0e6ed',
+                        strokeDashArray: 5,
+                        xaxis: {
+                            lines: {
+                                show: true
+                            }
+                        },
+                        yaxis: {
+                            lines: {
+                                show: false
+                            }
+                        },
+                        padding: {
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 0
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'right',
+                        fontSize: '16px',
+                        markers: {
+                            width: 10,
+                            height: 10,
+                            offsetX: -2,
+                        },
+                        itemMargin: {
+                            horizontal: 10,
+                            vertical: 5
+                        },
+                    },
+                    tooltip: {
+                        marker: {
+                            show: true
+                        },
+                        x: {
+                            show: false
+                        }
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: isDark ? 0.19 : 0.28,
+                            opacityTo: 0.05,
+                            stops: isDark ? [100, 100] : [45, 100],
+                        },
+                    },
+                }
+            },
+
+            // sales by category
+            get salesByCategoryOptions() {
+                return {
+                    series: [985, 737, 270],
+                    chart: {
+                        type: 'donut',
+                        height: 460,
+                        fontFamily: 'Nunito, sans-serif',
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 25,
+                        colors: isDark ? '#0e1726' : '#fff'
+                    },
+                    colors: isDark ? ['#5c1ac3', '#e2a03f', '#e7515a', '#e2a03f'] : ['#e2a03f',
+                        '#5c1ac3', '#e7515a'
+                    ],
+                    legend: {
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        fontSize: '14px',
+                        markers: {
+                            width: 10,
+                            height: 10,
+                            offsetX: -2,
+                        },
+                        height: 50,
+                        offsetY: 20,
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                background: 'transparent',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '29px',
+                                        offsetY: -10
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '26px',
+                                        color: isDark ? '#bfc9d4' : undefined,
+                                        offsetY: 16,
+                                        formatter: (val) => {
+                                            return val;
+                                        },
+                                    },
+                                    total: {
+                                        show: true,
+                                        label: 'Toplam',
+                                        color: '#888ea8',
+                                        fontSize: '29px',
+                                        formatter: (w) => {
+                                            return w.globals.seriesTotals.reduce(function(a,
+                                                b) {
+                                                return a + b;
+                                            }, 0);
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    labels: ['Makine 1', 'Makine 2', 'Makine 3'],
+                    states: {
+                        hover: {
+                            filter: {
+                                type: 'none',
+                                value: 0.15,
+                            }
+                        },
+                        active: {
+                            filter: {
+                                type: 'none',
+                                value: 0.15,
+                            }
+                        },
+                    }
+                }
+            },
+
+            // daily sales
+            get dailySalesOptions() {
+                return {
+                    series: [{
+                            name: 'Sales',
+                            data: [44, 55, 41, 67, 22, 43, 21]
+                        },
+                        {
+                            name: 'Last Week',
+                            data: [44, 23, 20, 8, 13, 27, 33]
+                        },
+                    ],
+                    chart: {
+                        height: 160,
+                        type: 'bar',
+                        fontFamily: 'Nunito, sans-serif',
+                        toolbar: {
+                            show: false
+                        },
+                        stacked: true,
+                        stackType: '100%'
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 1
+                    },
+                    colors: ['#e2a03f', '#e0e6ed'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            legend: {
+                                position: 'bottom',
+                                offsetX: -10,
+                                offsetY: 0
+                            }
+                        }
+                    }],
+                    xaxis: {
+                        labels: {
+                            show: false
+                        },
+                        categories: ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'],
+                    },
+                    yaxis: {
+                        show: false
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '25%'
+                        }
+                    },
+                    legend: {
+                        show: false
+                    },
+                    grid: {
+                        show: false,
+                        xaxis: {
+                            lines: {
+                                show: false
+                            }
+                        },
+                        padding: {
+                            top: 10,
+                            right: -20,
+                            bottom: -20,
+                            left: -20
+                        },
+                    },
+                }
+            },
+
+            // total orders
+            get totalOrdersOptions() {
+                return {
+                    series: [{
+                        name: 'Sales',
+                        data: [28, 40, 36, 52, 38, 60, 38, 52, 36, 40]
+                    }],
+                    chart: {
+                        height: 290,
+                        type: "area",
+                        fontFamily: 'Nunito, sans-serif',
+                        sparkline: {
+                            enabled: true
+                        }
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2
+                    },
+                    colors: isDark ? ['#00ab55'] : ['#00ab55'],
+                    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                    yaxis: {
+                        min: 0,
+                        show: false
+                    },
+                    grid: {
+                        padding: {
+                            top: 125,
+                            right: 0,
+                            bottom: 0,
+                            left: 0
+                        }
+                    },
+                    fill: {
+                        opacity: 1,
+                        type: 'gradient',
+                        gradient: {
+                            type: 'vertical',
+                            shadeIntensity: 1,
+                            inverseColors: !1,
+                            opacityFrom: 0.3,
+                            opacityTo: 0.05,
+                            stops: [100, 100],
+                        },
+                    },
+                    tooltip: {
+                        x: {
+                            show: false
+                        },
+                    },
+                }
+            }
+        }));
+    });
+</script>
+
+{% endblock %}

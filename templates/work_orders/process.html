@@ -1,0 +1,187 @@
+{% extends 'components/layouts/default.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="pt-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="panel">
+            <div class="flex items-center justify-between mb-5">
+                <h5 class="font-semibold text-lg dark:text-white-light">İş Emri Detayları</h5>
+            </div>
+            <div class="panel">
+                <div class="mb-5 flex flex-col sm:flex-row" x-data="{ tab: 'header'}">
+                    <div class="mx-10 mb-5 sm:mb-0">
+                        <ul class="w-24 m-auto text-center font-semibold">
+                            <li>
+                                <a href="javascript:" class="p-3.5 py-4 -mb-[1px] block ltr:border-r rtl:border-l border-white-light dark:border-[#191e3a] relative before:transition-all before:duration-700 hover:text-secondary before:absolute before:w-[1px] before:bottom-0 before:top-0 ltr:before:-right-[1px] rtl:before:-left-[1px] before:m-auto before:h-0 hover:before:h-[80%] before:bg-secondary" :class="{'text-secondary before:!h-[80%]' : tab === 'header'}" @click="tab='header'">Başlık</a>
+                            </li>
+                            <li>
+                                <a href="javascript:" class="p-3.5 py-4 -mb-[1px] block ltr:border-r rtl:border-l border-white-light dark:border-[#191e3a] relative before:transition-all before:duration-700 hover:text-secondary before:absolute before:w-[1px] before:bottom-0 before:top-0 ltr:before:-right-[1px] rtl:before:-left-[1px] before:m-auto before:h-0 before:bg-secondary hover:before:h-[80%]" :class="{'text-secondary before:!h-[80%]' : tab === 'details'}" @click="tab='details'">Detaylar</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="flex-1 text-sm">
+                        <template x-if="tab === 'header'">
+                            <div>
+                                <h4 class="font-semibold text-2xl mb-4">{{ work_order.title }}</h4>
+                                <p class="mb-4"><b>Durum:</b>
+                                    {% if work_order.status == 'waiting' %}
+                                        <span class="badge badge-outline-info">Bekliyor</span>
+                                    {% elif work_order.status == 'in_progress' %}
+                                        <span class="badge badge-outline-secondary">Devam Ediyor</span>
+                                    {% elif work_order.status == 'paused' %}
+                                        <span class="badge badge-outline-warning">Durduruldu</span>
+                                    {% elif work_order.status == 'completed' %}
+                                        <span class="badge badge-outline-success">Tamamlandı</span>
+                                    {% elif work_order.status == 'cancelled' %}
+                                        <span class="badge badge-outline-danger">İptal Edildi</span>
+                                    {% endif %}
+                                </p>
+                                <p class="mb-4"><b>Açıklama:</b> {{ work_order.description }}</p>
+                                <p></p>
+                            </div>
+                        </template>
+                        <template x-if="tab === 'details'">
+                            <div>
+                                <div class="flex items-start">
+                                    <div class="flex-auto">
+                                        <p class="mb-3"><b>Beden: </b> {{ work_order.form }}</p>
+                                        <p class="mb-3"><b>Basılacak Adet: </b> {{ work_order.amount }}</p>
+                                        <p class="mb-3"><b>Baskı Blok Sayısı: </b> {{ work_order.number_of_blocks }}</p>
+                                        <p class="mb-3"><b>Kopya Sayısı:</b> {{ work_order.number_of_copy }}</p>
+                                        <p class="mb-3"><b>Kalan Kopya Sayısı:</b> {{ work_order.number_of_remained_copy }}</p>
+                                        <p class="mb-3"><b>Planlanan Başlangıç Tarihi: </b> {{ work_order.planned_start_date }}</p>
+                                        <p class="mb-3"><b>Planlan Bitiş Tarihi: </b> {{ work_order.planned_end_date }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="flex items-center justify-between mb-5">
+                <h5 class="font-semibold text-lg dark:text-white-light">İş Emri Hareketleri</h5>
+            </div>
+            <div class="mb-5">
+                <ul class="md:space-x-5 rtl:space-x-reverse grid grid-cols-2 md:grid-cols-0 md:flex justify-center mb-10 gap-5 md:gap-0">
+                    {% if work_order.status == 'waiting' %}
+                        <a href="{% url 'start_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                                    <path d="M3.12114 8.94462C3.04698 10.0133 3 11.0609 3 12C3 12.9392 3.04698 13.9868 3.12114 15.0554C3.38338 18.8341 3.5145 20.7235 4.95724 21.626C6.39999 22.5285 8.00859 21.7134 11.2258 20.083C12.0604 19.6601 12.8665 19.2292 13.5783 18.8127C14.3897 18.3379 15.2726 17.7682 16.1628 17.163C19.3876 14.9708 21 13.8747 21 12C21 10.1253 19.3876 9.0292 16.1628 6.83701C15.2726 6.23185 14.3897 5.66208 13.5783 5.1873C12.8665 4.77077 12.0604 4.33992 11.2258 3.91698C8.00859 2.28664 6.39999 1.47147 4.95725 2.374C4.14454 2.88239 3.74803 3.70393 3.50983 4.99992" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">Başlat</h5>
+                            </li>
+                        </a>
+                        <a href="{% url 'cancel_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">İptal Et</h5>
+                            </li>
+                        </a>
+                    {% elif work_order.status == 'in_progress' %}
+                        <a href="{% url 'pause_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg class="w-16 h-16 text-primary mx-auto" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 18C2 19.8856 2 20.8284 2.58579 21.4142C3.17157 22 4.11438 22 6 22C7.88562 22 8.82843 22 9.41421 21.4142C10 20.8284 10 19.8856 10 18V6C10 4.11438 10 3.17157 9.41421 2.58579C8.82843 2 7.88562 2 6 2C4.11438 2 3.17157 2 2.58579 2.58579C2 3.17157 2 4.11438 2 6V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M22 6C22 4.11438 22 3.17157 21.4142 2.58579C20.8284 2 19.8856 2 18 2C16.1144 2 15.1716 2 14.5858 2.58579C14 3.17157 14 4.11438 14 6V18C14 19.8856 14 20.8284 14.5858 21.4142C15.1716 22 16.1144 22 18 22C19.8856 22 20.8284 22 21.4142 21.4142C22 20.8284 22 19.8856 22 18V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">Durdur</h5>
+                            </li>
+                        </a>
+                        <a href="{% url 'complete_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                                    <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">Tamamla</h5>
+                            </li>
+                        </a>
+                    {% elif work_order.status == 'paused' %}
+                        <a href="{% url 'continue_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                                    <path d="M3.12114 8.94462C3.04698 10.0133 3 11.0609 3 12C3 12.9392 3.04698 13.9868 3.12114 15.0554C3.38338 18.8341 3.5145 20.7235 4.95724 21.626C6.39999 22.5285 8.00859 21.7134 11.2258 20.083C12.0604 19.6601 12.8665 19.2292 13.5783 18.8127C14.3897 18.3379 15.2726 17.7682 16.1628 17.163C19.3876 14.9708 21 13.8747 21 12C21 10.1253 19.3876 9.0292 16.1628 6.83701C15.2726 6.23185 14.3897 5.66208 13.5783 5.1873C12.8665 4.77077 12.0604 4.33992 11.2258 3.91698C8.00859 2.28664 6.39999 1.47147 4.95725 2.374C4.14454 2.88239 3.74803 3.70393 3.50983 4.99992" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">Devam Et</h5>
+                            </li>
+                        </a>
+                        <a href="{% url 'complete_process' work_order_uuid=work_order.uuid %}">
+                            <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                                    <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                <h5 class="mt-3 font-bold group-hover:text-primary">Tamamla</h5>
+                            </li>
+                        </a>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="pt-5 space-y-8">
+        <div class="panel">
+            <div class="flex items-center justify-between mb-5">
+                <h5 class="font-semibold text-lg dark:text-white-light">Baskı Hareketleri</h5>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+                <ul class="md:space-x-5 rtl:space-x-reverse grid grid-cols-2 md:grid-cols-0 md:flex justify-center mb-10 gap-5 md:gap-0">
+                    <li class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 py-10 bg-white dark:bg-[#0e1726] text-center md:w-[240px] group hover:shadow-[rgba(145,158,171,0.20)_0px_0px_2px_0px,_rgba(145,158,171,0.12)_0px_12px_24px_-4px]" @click="showCopyComplete()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-primary mx-auto">
+                            <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M20.9983 10C20.9862 7.82497 20.8897 6.64706 20.1213 5.87868C19.2426 5 17.8284 5 15 5H12C9.17157 5 7.75736 5 6.87868 5.87868C6 6.75736 6 8.17157 6 11V16C6 18.8284 6 20.2426 6.87868 21.1213C7.75736 22 9.17157 22 12 22H15C17.8284 22 19.2426 22 20.1213 21.1213C21 20.2426 21 18.8284 21 16V15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M3 10V16C3 17.6569 4.34315 19 6 19M18 5C18 3.34315 16.6569 2 15 2H11C7.22876 2 5.34315 2 4.17157 3.17157C3.51839 3.82475 3.22937 4.69989 3.10149 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        <h5 class="mt-3 font-bold group-hover:text-primary">Kopya Tamamlandı</h5>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<script>
+    async function showCopyComplete() {
+        const swalWithBootstrapButtons = window.Swal.mixin({
+            confirmButtonClass: 'btn btn-secondary',
+            cancelButtonClass: 'btn btn-dark ltr:mr-3 rtl:ml-3',
+            buttonsStyling: false,
+        });
+        var result = {isConfirmed: false, isDenied: false, isDismissed: false, value:0 };
+        var deneme = 10;
+        swalWithBootstrapButtons
+        .fire({
+            title: 'Kalan Kopya Sayısı',
+            text: "Zorunlu alan!",
+            validationMessage: 'Uygun değil!',
+            padding: '2em',
+            input: 'number',
+            inputAttributes: {
+                required: true,
+                min: 0,
+                max: '{{work_order.number_of_remained_copy}}'.replace(",","."),
+                step: 0.1,
+            },
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Tamamla',
+            cancelButtonText: 'İptal Et',
+            reverseButtons: true,
+            padding: '2em',
+        })
+        .then((result) => {
+                if (result.value) {
+                    var url = "/processes/{{work_order.uuid}}/copy_complete/" + parseFloat(result.value).toFixed(1);
+                    window.location.href = url
+            } else if (result.dismiss === window.Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire('İptal Edildi', '', 'error');
+            }
+        });
+    }
+</script>
+{% endblock %}

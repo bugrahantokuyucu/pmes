@@ -1,0 +1,25 @@
+{% extends 'components/layouts/auth.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="flex justify-center items-center min-h-screen bg-[url(../images/map.svg)] dark:bg-[url(../images/map-dark.svg)] bg-cover bg-center">
+        <div class="panel sm:w-[480px] m-6 max-w-lg w-full">
+            <h2 class="font-bold text-2xl mb-3">KAPP-MES Kullanıcı Girişi</h2>
+            <p class="mb-7">Giriş yapmak için kullanıcı adı ve şifre girin</p>
+            <form class="space-y-5" method="post">
+                {% csrf_token %}
+                <div>
+                    <label for="id_username">Kullanıcı Adı</label>
+                    <input class="form-input" type="text" name="username" autofocus="" autocapitalize="none"
+                           autocomplete="username" maxlength="150" required="" id="id_username" placeholder="Kullanıcı Adı">
+                </div>
+                <div>
+                    <label for="id_password">Şifre</label>
+                    <input class="form-input" type="password" name="password" autocomplete="current-password"
+                           placeholder="Şifre" required="" id="id_password">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

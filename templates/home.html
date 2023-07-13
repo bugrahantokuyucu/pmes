@@ -1,0 +1,24 @@
+{% extends 'components/layouts/auth.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="flex min-h-screen items-center justify-center dark:bg-dark-dark-light">
+    <div class="w-full lg:w-1/2 h-full" x-data="comingsoon">
+        <div class="max-w-[480px] mx-auto p-5 md:p-10">
+            <h4 class="text-primary text-2xl md:text-4xl font-bold mb-2">KAPP-MES</h4>
+            <p class="text-base font-bold mb-10 text-white-dark"></p>
+            <div class="flex space-x-4 rtl:space-x-reverse text-white font-semibold text-center mb-10 md:mb-20">
+            <a type="button" href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Operatör Girişi</a>
+            <a type="button"  href="/admin" class="btn btn-info btn-lg">Yönetici Girişi</a>
+            </div>
+            <p class="text-base font-bold mb-10 text-white-dark">V01.00</p>
+            <p class="text-center"> © 2023. <a href="/" class="router-link-active">OCT</a> Tüm Hakları Saklıdır.</p>
+        </div>
+    </div>
+    <div class="bg-[#060818] w-1/2 min-h-screen hidden lg:flex items-center justify-center p-4" style="background-color:#2198ED">
+        <img src="{% static 'assets/images/home.svg' %}" alt="kapp-home"/>
+    </div>
+</div>
+
+{% endblock %}

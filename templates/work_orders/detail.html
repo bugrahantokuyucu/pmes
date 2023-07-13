@@ -1,0 +1,199 @@
+{% extends 'components/layouts/default.html' %}
+{% load static %}
+
+{% block content %}
+    <div x-data="invoicePreview">
+        <div class="flex items-center lg:justify-end justify-center flex-wrap gap-4 mb-6">
+            {% if user.is_superuser %}
+            <a href="{% url 'work_order_create' %}" class="btn btn-primary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Yeni İş Emri
+            </a>
+            <a href="{% url 'work_order_edit' work_order_pk=work_order.pk %}" class="btn btn-warning gap-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                    <path opacity="0.5" d="M22 10.5V12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2H13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M17.3009 2.80624L16.652 3.45506L10.6872 9.41993C10.2832 9.82394 10.0812 10.0259 9.90743 10.2487C9.70249 10.5114 9.52679 10.7957 9.38344 11.0965C9.26191 11.3515 9.17157 11.6225 8.99089 12.1646L8.41242 13.9L8.03811 15.0229C7.9492 15.2897 8.01862 15.5837 8.21744 15.7826C8.41626 15.9814 8.71035 16.0508 8.97709 15.9619L10.1 15.5876L11.8354 15.0091C12.3775 14.8284 12.6485 14.7381 12.9035 14.6166C13.2043 14.4732 13.4886 14.2975 13.7513 14.0926C13.9741 13.9188 14.1761 13.7168 14.5801 13.3128L20.5449 7.34795L21.1938 6.69914C22.2687 5.62415 22.2687 3.88124 21.1938 2.80624C20.1188 1.73125 18.3759 1.73125 17.3009 2.80624Z" stroke="currentColor" stroke-width="1.5"></path>
+                    <path opacity="0.5" d="M16.6522 3.45508C16.6522 3.45508 16.7333 4.83381 17.9499 6.05034C19.1664 7.26687 20.5451 7.34797 20.5451 7.34797M10.1002 15.5876L8.4126 13.9" stroke="currentColor" stroke-width="1.5"></path>
+                </svg>
+                Düzenle </a>
+            {% endif %}
+            <a type="button" class="btn btn-success gap-2" href="{% url 'create_work_order_pdf' work_order_pk=work_order.pk %}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                    <path opacity="0.5" d="M17 9.00195C19.175 9.01406 20.3529 9.11051 21.1213 9.8789C22 10.7576 22 12.1718 22 15.0002V16.0002C22 18.8286 22 20.2429 21.1213 21.1215C20.2426 22.0002 18.8284 22.0002 16 22.0002H8C5.17157 22.0002 3.75736 22.0002 2.87868 21.1215C2 20.2429 2 18.8286 2 16.0002L2 15.0002C2 12.1718 2 10.7576 2.87868 9.87889C3.64706 9.11051 4.82497 9.01406 7 9.00195" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M12 2L12 15M12 15L9 11.5M12 15L15 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                İndir </a>
+        </div>
+        <div class="panel">
+            <div class="flex justify-between flex-wrap gap-4 px-4">
+                <div class="text-2xl font-semibold italic">{{ work_order.title|capfirst}}</div>
+            </div>
+            <br>
+            <div class="ltr:text-left rtl:text-left px-4">
+                <div class="shrink-0">
+                    {% if work_order.status == 'waiting' %}
+                        <span class="badge badge-outline-info">Bekliyor</span>
+                    {% elif work_order.status == 'in_progress' %}
+                        <span class="badge badge-outline-secondary">Devam Ediyor</span>
+                    {% elif work_order.status == 'paused' %}
+                        <span class="badge badge-outline-warning">Durduruldu</span>
+                    {% elif work_order.status == 'cancelled' %}
+                        <span class="badge badge-outline-danger">İptal Edildi</span>
+                    {% elif work_order.status == 'completed' %}
+                        <span class="badge badge-outline-success">Tamamlandı</span>
+                    {% endif %}
+                </div>
+                <br>
+                <div class="flex justify-between lg:flex-row flex-col gap-6 flex-wrap">
+                    <div class="flex-1">
+                        <div class="xl:1/3 lg:w-2/5 sm:w-1/2">
+                            <div class="space-y-1 text-white-dark">
+                                <div class="text-black dark:text-white font-semibold"><b>Tamamlanma Oranı:</b></div>
+                                <div class="h-6 bg-[#ebedf2] dark:bg-dark/40 rounded-full" style="width:100%">
+                                    {% if not completion_rate == 0  %}
+                                        <div class="bg-gradient-to-r from-[#2b5876] to-[#4e4376] h-6 rounded-full text-center text-white flex justify-between items-center px-2 text-xs" style="width:{{completion_rate}}%">
+                                            {% if completion_rate > 10  %}
+                                                <span></span><span>{{ completion_rate }}%</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ltr:text-right rtl:text-left px-4">
+                <div class="space-y-1 mt-6 text-white-dark">
+                    <div>İş emrine ait detayları aşağıda bulabilirsiniz</div>
+                </div>
+            </div>
+            <hr class="border-[#e0e6ed] dark:border-[#1b2e4b] my-6">
+            <div class="flex justify-between lg:flex-row flex-col gap-6 flex-wrap">
+                <div class="flex-1">
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>İş Emri Açıklaması:</b></div>
+                        <div>{{ work_order.description }}</div>
+                    </div>
+                    <hr><br>
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>Baskı Makinesi:</b></div>
+                            <div class="whitespace-nowrap">{{ work_order.machine.name }}</div>
+                    </div>
+                    <hr><br>
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>Planlanan Başlama Tarihi:</b></div>
+                            <div class="whitespace-nowrap">{{ work_order.planned_start_date }}</div>
+                    </div>
+                    <hr><br>
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>Planlanan Bitiş Tarihi:</b></div>
+                        <div class="whitespace-nowrap">{{ work_order.planned_end_date }}</div>
+                    </div>
+                    {% if work_order.actual_start_date %}
+                    <hr><br>
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>İş Başlama Tarihi:</b></div>
+                            <div class="whitespace-nowrap">{{ work_order.actual_start_date }}</div>
+                    </div>
+                    {% endif %}
+                    {% if work_order.actual_end_date %}
+                    <hr><br>
+                    <div class="space-y-1 text-white-dark">
+                        <div class="text-dark"><b>İş Bitiş Tarihi:</b></div>
+                        <div class="whitespace-nowrap">{{ work_order.actual_end_date }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between sm:flex-row flex-col gap-6 lg:w-2/3">
+                    <div class="xl:1/3 lg:w-2/5 sm:w-1/2">
+                        {% for note in notes %}
+                            <div class="space-y-1 text-white-dark">
+                                <div class="text-dark"><b>İş Emri Notu:</b></div>
+                            <div class="whitespace-nowrap">{{ note.note }}</div>
+                            </div>
+                            <hr><br>
+                        {% endfor %}
+                    </div>
+                    <div class="xl:1/3 lg:w-2/5 sm:w-1/2">
+                        <a href="{% url 'transactions' work_order_uuid=work_order.uuid %}">
+                            <img style="border: 1px solid #555;" src="data:image/png;base64,{{qr_str}}"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive mt-6">
+                <table class="table-striped">
+                    <thead>
+                        <tr>
+                            <template x-for="item in columns" :key="item.key">
+                                <th :class="[item.class]" x-text="item.label"></th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="item in items" :key="item.id">
+                            <tr class="bg-success/20 border-success/20">
+                                <td x-text="item.form"></td>
+                                <td x-text="item.amount"></td>
+                                <td x-text="item.remained_amount"></td>
+                                <td x-text="item.number_of_blocks"></td>
+                                <td x-text="item.number_of_copy"></td>
+                                <td x-text="item.number_of_remained_copy"></td>
+                                <td x-text="item.processed_by"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        document.addEventListener("alpine:init", () => {
+            Alpine.data('invoicePreview', () => ({
+                items: [{
+                        form: {% if work_order.form %} {{ work_order.form }} {% else %} '-' {% endif %},
+                        amount: {{ work_order.amount }},
+                        remained_amount: {{ work_order.remained_amount }},
+                        number_of_blocks: {{ work_order.number_of_blocks }},
+                        number_of_copy: "{{ work_order.number_of_copy }}",
+                        number_of_remained_copy: "{{ work_order.number_of_remained_copy }}",
+                        processed_by: "{{ work_order.processed_by.first_name }} {{ work_order.processed_by.last_name }}",
+                    }
+                ],
+                columns: [{
+                        key: 'form',
+                        label: 'Beden'
+                    },
+                    {
+                        key: 'amount',
+                        label: 'Baskı Adedi'
+                    },
+                    {
+                        key: 'remained_amount',
+                        label: 'Kalan Baskı Adedi'
+                    },
+                    {
+                        key: 'number_of_blocks',
+                        label: 'Blok Sayısı'
+                    },
+                    {
+                        key: 'number_of_copy',
+                        label: 'Kopya Sayısı'
+                    },
+                    {
+                        key: 'number_of_remained_copy',
+                        label: 'Kalan Kopya Sayısı'
+                    },
+                    {
+                        key: 'processed_by',
+                        label: 'Operatör'
+                    },
+                ]
+            }));
+        });
+    </script>
+{% endblock %}
