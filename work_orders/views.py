@@ -49,7 +49,7 @@ def work_order_list(request):
 
 @login_required
 def generate_qr(request, work_order_uuid):
-    img = make(request.get_host() + '/work_orders/' + str(work_order_uuid))
+    img = make(request.get_host() + '/processes/' + str(work_order_uuid))
     return img
 
 
@@ -131,10 +131,10 @@ def create_pdf(request, work_order_pk):
     work_order = WorkOrder.objects.get(pk=work_order_pk)
 
     buffer = BytesIO()
-    pdfmetrics.registerFont(TTFont('Verdana', 'Verdana.ttf'))
+    pdfmetrics.registerFont(TTFont("Vera", "Vera.ttf"))
     p = canvas.Canvas(buffer, pagesize=A4)
 
-    p.setFont("Verdana", 14)
+    p.setFont("Vera", 14)
     p.drawString(x, y, "BASKI TAKİP FORMU")
     p.drawString(x, y-60, "İş Emri: {}".format(work_order.title))
     p.drawString(x, y-90, "Baskı Makinesi: {}".format(work_order.machine.name))

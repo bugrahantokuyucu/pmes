@@ -166,7 +166,7 @@
     document.addEventListener("alpine:init", () => {
         Alpine.data("sales", () => ({
             init() {
-                isDark = this.$store.app.theme === "dark" ? true : false;
+                isDark = true;
                 isRtl = this.$store.app.rtlClass === "rtl" ? true : false;
 
                 const revenueChart = null;
@@ -201,7 +201,7 @@
                 }, 300);
 
                 this.$watch('$store.app.theme', () => {
-                    isDark = this.$store.app.theme === "dark" ? true : false;
+                    isDark = true;
 
                     this.revenueChart.updateOptions(this.revenueChartOptions);
                     this.salesByCategory.updateOptions(this.salesByCategoryOptions);

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from work_orders.models import WorkOrder
+from processes.models import ProcessLog
 from datetime import date
 from django.contrib.auth.decorators import login_required
 
@@ -25,6 +26,14 @@ def start_process(request, work_order_uuid):
     work_order.processed_by = request.user
     work_order.save()
 
+    ProcessLog.objects.create(
+        work_order=work_order,
+        process='start_process',
+        remained_amount=work_order.remained_amount,
+        number_of_remained_copy=work_order.number_of_remained_copy,
+        processed_by=request.user
+    )
+
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
 
@@ -34,6 +43,14 @@ def pause_process(request, work_order_uuid):
     work_order.status = 'paused'
     work_order.save()
 
+    ProcessLog.objects.create(
+        work_order=work_order,
+        process='pause_process',
+        remained_amount=work_order.remained_amount,
+        number_of_remained_copy=work_order.number_of_remained_copy,
+        processed_by=request.user
+    )
+
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
 
@@ -42,6 +59,14 @@ def continue_process(request, work_order_uuid):
     work_order = WorkOrder.objects.get(uuid=work_order_uuid)
     work_order.status = 'in_progress'
     work_order.save()
+
+    ProcessLog.objects.create(
+        work_order=work_order,
+        process='continue_process',
+        remained_amount=work_order.remained_amount,
+        number_of_remained_copy=work_order.number_of_remained_copy,
+        processed_by=request.user
+    )
 
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
@@ -53,6 +78,14 @@ def complete_process(request, work_order_uuid):
     work_order.actual_end_date = date.today()
     work_order.save()
 
+    ProcessLog.objects.create(
+        work_order=work_order,
+        process='complete_process',
+        remained_amount=work_order.remained_amount,
+        number_of_remained_copy=work_order.number_of_remained_copy,
+        processed_by=request.user
+    )
+
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
 
@@ -62,6 +95,14 @@ def cancel_process(request, work_order_uuid):
         work_order = WorkOrder.objects.get(uuid=work_order_uuid)
         work_order.status = 'cancelled'
         work_order.save()
+
+        ProcessLog.objects.create(
+            work_order=work_order,
+            process='cancel_process',
+            remained_amount=work_order.remained_amount,
+            number_of_remained_copy=work_order.number_of_remained_copy,
+            processed_by=request.user
+        )
 
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
@@ -89,6 +130,14 @@ def copy_complete_process(request, work_order_uuid, number_of_remained_copy):
         work_order.actual_end_date = date.today()
 
     work_order.save()
+
+    ProcessLog.objects.create(
+        work_order=work_order,
+        process='copy_complete_process',
+        remained_amount=work_order.remained_amount,
+        number_of_remained_copy=work_order.number_of_remained_copy,
+        processed_by=request.user
+    )
 
     return redirect('work_order_detail', work_order_pk=work_order.id)
 
