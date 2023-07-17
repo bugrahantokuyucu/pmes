@@ -24,7 +24,7 @@
 
                 <div class="dropdown shrink-0" x-data="dropdown" @click.outside="open = false">
                     <a href="javascript:;" class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60" @click="toggle">
-                        <img :src="`{% static 'assets/images/flags' %}/${$store.app.locale.toUpperCase()}.svg`" alt="image" class="w-5 h-5 object-cover rounded-full" />
+                        <span class="ltr:ml-15 rtl:mr-15 font-semibold align-middle">TR</span>
                     </a>
                     <ul x-cloak x-show="open" x-transition x-transition.duration.300ms class="ltr:-right-14 sm:ltr:-right-2 rtl:-left-14 sm:rtl:-left-2 top-11 !px-2 text-dark dark:text-white-dark grid grid-cols-2 gap-y-2 font-semibold dark:text-white-light/90 w-[280px]">
                         <template x-for="item in languages">
