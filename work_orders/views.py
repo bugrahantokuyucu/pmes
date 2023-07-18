@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from .models import WorkOrder
 from machines.models import Machine
+from processes.models import CompletedPrint
 from notes.models import Note
 from .forms import WorkOrderForm
 from qrcode import *
@@ -48,8 +49,12 @@ def work_order_list(request):
 
 
 @login_required
-def generate_qr(request, work_order_uuid):
-    img = make(request.get_host() + '/processes/' + str(work_order_uuid))
+def generate_qr(request, work_order_uuid=None,  compeleted_print_uuid=None):
+    img = None
+    if work_order_uuid:
+        img = make(request.get_host() + '/processes/' + str(work_order_uuid))
+    if compeleted_print_uuid:
+        img = make(request.get_host() + '/processes/copy_completed/' + str(compeleted_print_uuid))
     return img
 
 
@@ -81,10 +86,12 @@ def work_order_create(request):
 def work_order_detail(request, work_order_pk):
     work_order = WorkOrder.objects.get(pk=work_order_pk)
     notes = Note.objects.filter(work_order=work_order)
-    qr = generate_qr(request, work_order_uuid=work_order.uuid)
+    work_order_qr = generate_qr(request, work_order_uuid=work_order.uuid)
+    print_completions = CompletedPrint.objects.filter(work_order=work_order)
+
 
     buffer_png = BytesIO()
-    qr.save(buffer_png, kind='PNG')
+    work_order_qr.save(buffer_png, kind='PNG')
 
     completion_rate = 100 - (work_order.number_of_remained_copy / work_order.number_of_copy) * 100
 
@@ -97,6 +104,7 @@ def work_order_detail(request, work_order_pk):
         'notes': notes,
         'qr_str': base64.b64encode(buffer_png.getvalue()).decode('utf-8'),
         'completion_rate': int(completion_rate),
+        'print_completions': print_completions,
     }
     return render(request, 'work_orders/detail.html', context)
 
@@ -153,4 +161,26 @@ def create_pdf(request, work_order_pk):
     p.save()
     buffer.seek(0)
     file_name = "{0}-{1}.pdf".format(work_order.planned_start_date, work_order.title)
+    return FileResponse(buffer, as_attachment=True, filename=file_name)
+
+
+@login_required
+def create_copy_complete_pdf(request, copy_complete_pk):
+    x = 100
+    y = 800
+    locale.setlocale(locale.LC_ALL, 'tr_TR.UTF-8')
+
+    completed_print = CompletedPrint.objects.get(pk=copy_complete_pk)
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+
+    qr_image = generate_qr(request, compeleted_print_uuid=completed_print.uuid)
+    y = y - 100
+    p.drawInlineImage(qr_image, x, y, width=100, height=100)
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    file_name = "{0}-{1}.pdf".format(completed_print.work_order.title, completed_print.pk)
     return FileResponse(buffer, as_attachment=True, filename=file_name)

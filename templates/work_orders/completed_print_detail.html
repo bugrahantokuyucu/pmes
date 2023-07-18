@@ -1,0 +1,60 @@
+{% extends 'components/layouts/default.html' %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-8 pt-5">
+    <div class="panel">
+        <div class="mb-5">
+            <div class="mx-auto max-w-[320px] md:max-w-[990px]">
+                <div class="justify-between space-y-4 rtl:space-x-reverse md:flex md:space-y-0 md:space-x-4">
+                    <div class="group rounded border border-black p-3 text-center hover:border-primary dark:border-[#1b2e4b] lg:p-5">
+                        <h3 class="text-xl lg:text-2xl">İş Emri Detayları</h3>
+                        <div class="mx-auto my-6 w-1/5 border-t border-black group-hover:border-primary dark:border-white-dark"></div>
+                        <p class="text-[15px]">{{ work_order.title }}</p>
+                        <div class="my-7 p-2.5 text-center text-lg group-hover:text-primary">
+                        </div>
+                        <ul class="mb-5 space-y-2.5 font-semibold group-hover:text-primary">
+                            <li class="flex items-center justify-center">
+                                <b>Beden:</b>&nbsp;{{ work_order.form }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>Baskı Blok Sayısı:</b>&nbsp;{{ work_order.number_of_blocks }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>Toplam Baskı Adeti:</b>&nbsp;{{ work_order.amount }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>Toplam Kopya Sayısı:</b>&nbsp;{{ work_order.number_of_copy }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>İş Başlangıç Tarihi:</b>&nbsp;{{ work_order.actual_start_date }}
+                            </li>
+                        </ul>
+                        <a href="{% url 'work_order_detail' work_order_pk=work_order.pk %}" class="btn text-black shadow-none group-hover:border-primary group-hover:bg-primary/10 group-hover:text-primary dark:border-white-dark/50 dark:text-white-dark">İş Emrine Git</a>
+                    </div>
+                    <div class="group rounded border border-black p-3 text-center hover:border-primary dark:border-[#1b2e4b] lg:p-5">
+                        <h3 class="text-xl lg:text-2xl">Kopya Detayları</h3>
+                        <div class="mx-auto my-6 w-1/5 border-t border-black group-hover:border-primary dark:border-white-dark"></div>
+                        <p class="text-[15px]"><b>Tamamlayan:</b>&nbsp;{{ completed_print.operator.first_name }} {{ completed_print.operator.last_name }}</p>
+                        <div class="my-7 p-2.5 text-center text-lg group-hover:text-primary">
+
+                        </div>
+                        <ul class="mb-5 space-y-2.5 font-semibold group-hover:text-primary">
+                            <li class="flex items-center justify-center">
+                                <b>Kopya Sayısı:</b>&nbsp;{{ completed_print.number_of_copy }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>Baskı Adeti:</b>&nbsp;{{ completed_print.amount }}
+                            </li>
+                            <li class="flex items-center justify-center">
+                                <b>Tamamlama Tarihi:</b>&nbsp;{{ completed_print.process_date_time }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

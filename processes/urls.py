@@ -11,4 +11,6 @@ urlpatterns = [
     path("<uuid:work_order_uuid>/continue/", views.continue_process, name="continue_process"),
     path("<uuid:work_order_uuid>/copy_complete/<str:number_of_remained_copy>", views.copy_complete_process,
          name="copy_complete_process"),
+    path("copy_completed/<uuid:completed_print_uuid>/", views.completed_copy_detail,
+         name="completed_copy_detail"),
 ]
