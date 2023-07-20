@@ -20,18 +20,18 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required
-def work_order_list(request):
+def work_order_list(request, filter=None):
     work_orders = WorkOrder.objects.all().order_by('-created_date')
     js_list = []
-    # status: complete, delayed, in_progress
+    # status: completed, delayed, in_progress
     for work_order in work_orders:
 
-        if date.today() > work_order.planned_end_date and work_order.status != 'complete':
+        if date.today() > work_order.planned_end_date and work_order.status != 'completed':
             work_order.status = 'delayed'
 
         wo_dict = work_order.__dict__
         js_dict = {
-            "id": wo_dict['id'],
+            "id": '/work_orders/' + str(wo_dict['id']) + '/details/',
             "title": wo_dict['title'],
             "date": str(wo_dict['planned_start_date'].strftime("%d %B %Y")),
             "description": wo_dict['description'],
@@ -41,9 +41,17 @@ def work_order_list(request):
         }
         js_list.append(js_dict)
 
+    if filter == 'delayed':
+        selected_tab = 'delayed'
+    elif filter == 'completed':
+        selected_tab = 'completed'
+    else:
+        selected_tab = ''
+
     context = {
         'work_orders': work_orders,
         'js_list': js_list,
+        'selectedTab': selected_tab,
     }
     return render(request, 'work_orders/list.html', context)
 
